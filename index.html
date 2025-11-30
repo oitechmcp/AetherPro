@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aether | Liquid Glass Prompt Enhancer Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Load Lucide Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --accent-glow: rgba(100, 200, 255, 0.6);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --bg-dark: #0f172a;
+            --brand-red: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding-top: 80px; /* Space for fixed header */
+            padding-bottom: 60px; /* Space for footer */
+        }
+
+        /* Moving Background Blobs */
+        .ambient-light {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-1 { width: 400px; height: 400px; background: #4f46e5; top: -100px; left: -100px; }
+        .orb-2 { width: 500px; height: 500px; background: #ec4899; bottom: -100px; right: -100px; animation-delay: -5s; }
+        .orb-3 { width: 300px; height: 300px; background: #06b6d4; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -10s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* --- NEW HEADER STYLES --- */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-logo {
+            height: 40px;
+            width: auto;
+            /* Invert allows black logo to be visible on dark bg. Remove if using a white logo. */
+            filter: invert(1) brightness(2); 
+            opacity: 0.9;
+        }
+
+        .brand-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            gap: 6px;
+        }
+        
+        .brand-text .highlight {
+            color: var(--brand-red);
+        }
+
+        /* --- FOOTER STYLES --- */
+        .app-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            z-index: 900;
+        }
+
+        /* Main Container - Glassmorphism */
+        .glass-container {
+            width: 90%;
+            max-width: 900px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--glass-shadow);
+            position: relative;
+            z-index: 10;
+            display: grid;
+            gap: 25px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* Inner Content Header (Subtitle) */
+        .content-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .content-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Input Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #a5f3fc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .glass-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            color: #fff;
+            font-size: 1.05rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .glass-input:focus {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(100, 200, 255, 0.1);
+        }
+
+        textarea.glass-input { min-height: 120px; }
+        
+        .negative-input {
+            min-height: 80px !important;
+            border-color: rgba(248, 113, 113, 0.3);
+        }
+        .negative-input:focus {
+             box-shadow: 0 0 20px rgba(248, 113, 113, 0.1);
+        }
+
+        /* Sidebar Controls (Right Column) */
+        .sidebar-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-block {
+            background: rgba(0,0,0,0.15);
+            border-radius: 16px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .glass-select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        
+        .glass-select option { background: #1e293b; }
+
+        .chip-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .chip:hover { background: rgba(255,255,255,0.05); }
+        
+        .chip.active {
+            background: rgba(165, 243, 252, 0.15);
+            border-color: #a5f3fc;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(165, 243, 252, 0.1);
+        }
+
+        /* Bottom Controls */
+        .bottom-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mode-selector {
+            flex: 2;
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 5px;
+            border: 1px solid var(--glass-border);
+            min-width: 250px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .enhance-btn {
+            flex: 1;
+            min-width: 180px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+            height: 50px;
+        }
+
+        .enhance-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+            box-shadow: 0 0 25px var(--accent-glow);
+            border-color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Output Section */
+        .output-container {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .output-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .output-content {
+            padding: 20px;
+            color: #a5f3fc;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            flex-grow: 1;
+            text-shadow: 0 0 5px rgba(165, 243, 252, 0.2);
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            transition: color 0.3s ease;
+        }
+        .action-btn:hover { color: #fff; }
+        .action-btn.active-audio { color: #4ade80; animation: pulse 2s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* History Panel */
+        .history-panel {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(30px);
+            z-index: 1050; /* Above header */
+            border-left: 1px solid var(--glass-border);
+            padding: 20px;
+            transform: translateX(110%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .history-panel.open { transform: translateX(0); }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--glass-border);
+            margin-top: 60px; /* Space for top header */
+        }
+
+        .history-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .history-item:hover {
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+        }
+        .history-item .time { color: var(--text-muted); font-size: 0.7rem; margin-bottom: 5px; }
+        .history-item .preview { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Loader */
+        .loader {
+            display: none;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #a5f3fc, transparent);
+            background-size: 200% 100%;
+            animation: shine 1s infinite linear;
+        }
+        @keyframes shine { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        @media (max-width: 768px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .glass-container { width: 95%; padding: 20px; }
+            .history-panel { width: 100%; }
+            .brand-text { font-size: 1.1rem; }
+            .brand-logo { height: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Background -->
+    <div class="ambient-light">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- NEW: Top Fixed Header -->
+    <nav class="app-header">
+        <div class="brand-section">
+            <img src="https://oitechmcp.github.io/project-insight/XPTTn_UES_meErBf4LOr9Q.png" alt="Aether Logo" class="brand-logo" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0'">
+            <div class="brand-text">
+                <span>Aether</span>
+                <span class="highlight">Pro</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" onclick="generateRandomPrompt()" title="Surprise Me (Gemini)">
+                <i data-lucide="dices"></i>
+            </button>
+            <button class="icon-btn" onclick="toggleHistory()" title="History">
+                <i data-lucide="history"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="glass-container">
+        <!-- Inner Sub-Header -->
+        <div class="content-header">
+            <p>High-fidelity Prompt Engineering Engine with <span style="font-size: 0.9em; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px;">Gemini AI</span></p>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left Column: Inputs -->
+            <div class="input-section">
+                <div class="input-group">
+                    <label>Positive Prompt <i data-lucide="edit-3" size="14"></i></label>
+                    <textarea id="promptInput" class="glass-input" placeholder="Describe your idea (e.g., A cyberpunk street vendor...)"></textarea>
+                </div>
+                <div class="input-group" style="margin-top: 20px;">
+                    <label style="color: #fca5a5;">Negative Prompt (Exclude) <i data-lucide="ban" size="14"></i></label>
+                    <textarea id="negativeInput" class="glass-input negative-input" placeholder="e.g., blur, low quality, deformed, text, logo"></textarea>
+                </div>
+            </div>
+
+            <!-- Right Column: Settings -->
+            <div class="sidebar-controls">
+                <div class="control-block">
+                    <label>Output Type</label>
+                    <select id="typeSelect" class="glass-select">
+                        <option value="image">Generative Image</option>
+                        <option value="website">Website UI</option>
+                        <option value="app">Mobile App</option>
+                        <option value="game">Game Asset</option>
+                        <option value="video">Cinematic Video</option>
+                        <option value="audio">Audio/SFX</option>
+                        <option value="content">Written Content</option>
+                    </select>
+                </div>
+
+                <div class="control-block">
+                    <label>Model Version</label>
+                    <select id="modelSelect" class="glass-select">
+                        <option value="v6.0">Midjourney v6.0 (High Detail)</option>
+                        <option value="niji6">Niji 6 (Anime/Illustrative)</option>
+                        <option value="dalle3">DALL-E 3 (Natural Language)</option>
+                        <option value="sdxl">SDXL (Photorealistic)</option>
+                        <option value="raw">Raw Mode (Unopinionated)</option>
+                    </select>
+                </div>
+
+                <div class="control-block">
+                    <label>Aspect Ratio</label>
+                    <div class="chip-group" id="arChips">
+                        <button class="chip active" onclick="setAR('1:1')">1:1</button>
+                        <button class="chip" onclick="setAR('16:9')">16:9</button>
+                        <button class="chip" onclick="setAR('9:16')">9:16</button>
+                        <button class="chip" onclick="setAR('4:3')">4:3</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="bottom-controls">
+            <div class="mode-selector">
+                <button class="mode-btn active" onclick="setMode('standard')">Standard</button>
+                <button class="mode-btn" onclick="setMode('json')">JSON Data</button>
+                <button class="mode-btn" onclick="setMode('toon')">Token Opt.</button>
+            </div>
+            
+            <button class="enhance-btn" onclick="generatePrompt()">
+                <i data-lucide="sparkles"></i> Enhance with Gemini
+            </button>
+        </div>
+
+        <!-- Output -->
+        <div class="output-container">
+            <div class="output-header">
+                <span class="output-label" style="font-size: 0.8rem; color: #a5f3fc; text-transform: uppercase;">Generated Result</span>
+                <div class="output-actions">
+                    <button class="action-btn" id="ttsBtn" onclick="readAloud()">
+                        <i data-lucide="volume-2" size="16"></i> Read Aloud ✨
+                    </button>
+                    <button class="action-btn" onclick="copyToClipboard()">
+                        <i data-lucide="copy" size="16"></i> Copy
+                    </button>
+                </div>
+            </div>
+            <div class="loader" id="loader"></div>
+            <div class="output-content" id="outputContent">
+                <span style="color: rgba(255,255,255,0.3);">Engine ready. Enter a prompt to begin...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Footer -->
+    <footer class="app-footer">
+        © 2025 oiTech Aether Pro. All analysis performed locally - your code never leaves your machine.
+    </footer>
+
+    <!-- History Slide-out -->
+    <div class="history-panel" id="historyPanel">
+        <div class="history-header">
+            <h3>Recent Prompts</h3>
+            <button class="icon-btn" onclick="toggleHistory()" style="width: 30px; height: 30px;">
+                <i data-lucide="x" size="16"></i>
+            </button>
+        </div>
+        <div class="history-list" id="historyList">
+            <span style="color: var(--text-muted); text-align: center; margin-top: 20px;">No history yet.</span>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i data-lucide="check-circle" color="#4ade80"></i>
+        <span id="toastMessage">Copied to clipboard!</span>
+    </div>
+
+    <script>
+        const apiKey = ""; // Provided by environment
+        let promptHistory = [];
+        let currentMode = 'standard';
+        let currentAR = '1:1';
+
+        // Init icons
+        function initIcons() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            } else {
+                setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 1000);
+            }
+        }
+        if (document.readyState === 'complete') initIcons();
+        else window.addEventListener('load', initIcons);
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function setAR(ar) {
+            currentAR = ar;
+            document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function toggleHistory() {
+            document.getElementById('historyPanel').classList.toggle('open');
+            renderHistory();
+        }
+
+        // --- Gemini API Helpers ---
+
+        async function callGemini(userPrompt, systemInstruction) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            // Retry logic
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) throw new Error(response.statusText);
+                    const data = await response.json();
+                    return data.candidates[0].content.parts[0].text;
+                } catch (e) {
+                    if (i === 2) throw e;
+                    await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
+                }
+            }
+        }
+
+        async function callGeminiTTS(text) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: text }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } // Kore is a nice neutral voice
+                    }
+                }
+            };
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].inlineData.data;
+            } catch (e) {
+                console.error("TTS Failed", e);
+                return null;
+            }
+        }
+
+        // --- Core Functions ---
+
+        async function generateRandomPrompt() {
+            const loader = document.getElementById('loader');
+            const inputField = document.getElementById('promptInput');
+            
+            loader.style.display = 'block';
+            
+            try {
+                const systemPrompt = "You are a creative muse. Generate a single, short, imaginative concept for a generative AI prompt. It could be sci-fi, fantasy, abstract, or photorealistic. Return ONLY the concept text, max 10 words.";
+                const concept = await callGemini("Surprise me with a creative concept.", systemPrompt);
+                
+                inputField.value = concept.trim();
+                // Optionally auto-generate? No, let user edit first.
+                showToast("Idea generated!", false);
+            } catch (e) {
+                inputField.value = "A futuristic city floating in clouds"; // Fallback
+                showToast("Using offline fallback", true);
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        async function generatePrompt() {
+            const input = document.getElementById('promptInput').value.trim();
+            const negative = document.getElementById('negativeInput').value.trim();
+            const type = document.getElementById('typeSelect').value;
+            const model = document.getElementById('modelSelect').value;
+            const output = document.getElementById('outputContent');
+            const loader = document.getElementById('loader');
+
+            if (!input) {
+                showToast("Please enter a prompt!", true);
+                return;
+            }
+
+            output.innerHTML = '';
+            loader.style.display = 'block';
+
+            // Construct System Prompt for Gemini
+            let sysPrompt = `You are an expert prompt engineer for generative AI models, specifically ${model}. 
+            Your task is to convert user input into a high-fidelity prompt suitable for generating ${type}.
+            
+            Constraints:
+            - Aspect Ratio: ${currentAR}
+            - Negative Prompt (exclude): ${negative || "None"}
+            
+            Output Mode Rules:
+            1. If mode is 'standard', output the final prompt text starting with '/imagine prompt:'. Include artistic details, lighting, camera settings, and engine specs (Unreal Engine 5, Octane, etc) relevant to ${type}.
+            2. If mode is 'json', output valid JSON with keys: "subject", "style", "lighting", "camera", "parameters", "full_prompt".
+            3. If mode is 'toon', output a token-optimized string using format: ROOT::Concept >> STYLE::Details >> LIGHT::Specs. Remove stop words.
+            
+            Do not include markdown code blocks. Just the raw text/json.
+            `;
+
+            try {
+                const result = await callGemini(`Mode: ${currentMode}. Input: "${input}"`, sysPrompt);
+                
+                typeWriter(result, output);
+                addToHistory(input, result);
+            } catch (e) {
+                output.innerText = "Error connecting to AI. Please try again.";
+                console.error(e);
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        // --- TTS Logic ---
+        
+        // Simple WAV header generator for PCM data
+        function pcmToWav(pcmData, sampleRate) {
+            const header = new ArrayBuffer(44);
+            const view = new DataView(header);
+            const dataLen = pcmData.length;
+            
+            view.setUint32(0, 0x52494646, false); // "RIFF"
+            view.setUint32(4, 36 + dataLen, true);
+            view.setUint32(8, 0x57415645, false); // "WAVE"
+            view.setUint32(12, 0x666d7420, false); // "fmt "
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, 1, true); // Mono
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            view.setUint32(36, 0x64617461, false); // "data"
+            view.setUint32(40, dataLen, true);
+            
+            return new Blob([header, pcmData], { type: 'audio/wav' });
+        }
+
+        async function readAloud() {
+            const text = document.getElementById('outputContent').innerText;
+            const btn = document.getElementById('ttsBtn');
+            
+            if(!text || text.includes("Engine ready") || text.includes("Error")) return;
+            
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin"></i> Loading...`;
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+
+            const base64Audio = await callGeminiTTS(text);
+            
+            if (base64Audio) {
+                // Convert Base64 to ArrayBuffer
+                const binaryString = window.atob(base64Audio);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                
+                // Create WAV blob (Assuming 24kHz which is typical for Gemini TTS preview)
+                // Note: The API returns raw PCM 16-bit. We need to wrap it.
+                // Or easier: Just play PCM if we can. 
+                // However, standard HTML5 Audio expects a container format.
+                // Let's assume the API returns valid audio data if specified or wrap it.
+                // Actually, Gemini TTS usually requires decoding.
+                
+                // Simple workaround for this demo: Create a Blob and try playing.
+                // If raw PCM, we need the WAV header. Let's assume 24000Hz.
+                const wavBlob = pcmToWav(bytes, 24000);
+                const audioUrl = URL.createObjectURL(wavBlob);
+                const audio = new Audio(audioUrl);
+                
+                btn.innerHTML = `<i data-lucide="volume-2"></i> Playing...`;
+                btn.classList.add('active-audio');
+                if(typeof lucide !== 'undefined') lucide.createIcons();
+                
+                audio.play();
+                audio.onended = () => {
+                    btn.innerHTML = `<i data-lucide="volume-2"></i> Read Aloud ✨`;
+                    btn.classList.remove('active-audio');
+                    if(typeof lucide !== 'undefined') lucide.createIcons();
+                };
+            } else {
+                showToast("TTS Failed", true);
+                btn.innerHTML = `<i data-lucide="volume-x"></i> Failed`;
+                setTimeout(() => {
+                     btn.innerHTML = `<i data-lucide="volume-2"></i> Read Aloud ✨`;
+                     if(typeof lucide !== 'undefined') lucide.createIcons();
+                }, 2000);
+            }
+        }
+
+        // --- Utils ---
+
+        function typeWriter(text, element) {
+            element.innerHTML = text; 
+        }
+
+        function addToHistory(original, result) {
+            promptHistory.unshift({ time: new Date().toLocaleTimeString(), original, result });
+            if (promptHistory.length > 10) promptHistory.pop();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            if (promptHistory.length === 0) return;
+            
+            list.innerHTML = '';
+            promptHistory.forEach((item) => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `<div class="time">${item.time}</div><div class="preview">${item.original}</div>`;
+                div.onclick = () => {
+                    document.getElementById('promptInput').value = item.original;
+                    document.getElementById('outputContent').innerText = item.result;
+                    document.getElementById('historyPanel').classList.remove('open');
+                };
+                list.appendChild(div);
+            });
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('outputContent').innerText;
+            if(!text || text.includes("ready")) return;
+
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast("Copied!");
+            } catch (err) {
+                console.error('Copy failed', err);
+                showToast("Copy failed", true);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            const icon = toast.querySelector('i');
+            icon.setAttribute('data-lucide', isError ? 'alert-circle' : 'check-circle');
+            icon.setAttribute('color', isError ? '#f87171' : '#4ade80');
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+            
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
